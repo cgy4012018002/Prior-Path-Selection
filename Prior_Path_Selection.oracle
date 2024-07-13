@@ -1,0 +1,97 @@
+#!/usr/bin/python2.7
+import sys
+import random
+import re  
+
+def lcs(s, t):
+    len1 = len(s)
+    len2 = len(t)
+    res = [[0 for i in range(len1 + 1)] for j in range(len2 + 1)]
+    for i in range(1, len2 + 1):
+        for j in range(1, len1 + 1):
+            if t[i - 1] == s[j - 1]:
+                res[i][j] = 1 + res[i - 1][j - 1]
+            else:
+                res[i][j] = max(res[i - 1][j], res[i][j - 1])
+    return res[-1][-1]
+    
+with open('old_sentences.txt', 'r') as f:  
+     old_sentences = f.readlines()  
+    
+
+with open('old_counters.txt', 'r') as f:  
+     old_counters = [int(count.strip()) for count in f.readlines()]
+
+
+    
+for i in range(len(old_sentences)):
+    old_sentences[i] = old_sentences[i].rstrip('\n')
+    old_sentences[i] = old_sentences[i].strip() 
+
+lines = sys.stdin.readlines()
+
+
+#with open('data', 'a') as f:  
+#  f.write(str(lines))
+
+for i in range(len(lines)):
+    lines[i] = lines[i].split(':')[1]
+    lines[i] = lines[i].rstrip('\n')
+    lines[i] = lines[i].strip() 
+
+
+new_sentences=lines
+
+#with open('temp', 'r') as f:  
+#    content = f.read()  
+#number = content.strip()  
+#updated_number = int(number)  
+#updated_number=updated_number+1
+#with open('temp', 'w') as f:  
+#    f.write(str(updated_number))
+
+old_lenth=len(old_sentences)
+appold=[]
+mylist=[0]*len(new_sentences)
+for j in range(len(new_sentences)):
+    print(new_sentences[j])
+    flag=0
+    for i in range(old_lenth):
+        temp_lenth=len(old_sentences[i-1])
+        if lcs(old_sentences[i-1], new_sentences[j])/temp_lenth > 0.87:
+            flag=1
+            old_counters[i-1]+=1
+            mylist[j]=old_counters[i-1]
+            # print(lcs_string(old_sentences[i], new_sentences[j])/temp_lenth)
+            # print('old:'+old_sentences[i])
+            # print('new:'+new_sentences[j])
+    if flag==0:
+        appold.append(new_sentences[j])
+        mylist[j]=1
+
+
+
+
+old_sentences=old_sentences+appold
+old_counters=old_counters+[1]*len(appold)
+
+
+with open("old_counters.txt", "w") as file:  
+    for item in old_counters:  
+        file.write(str(item) + "\n")
+
+with open("old_sentences.txt", "w") as file:  
+    for item in old_sentences:  
+        file.write(str(item) + "\n")
+
+# print(old_sentences)
+# print(old_counters)
+# print(mylist)
+
+sorted_list = sorted(enumerate(mylist), key=lambda x: (x[1], x[0]))  
+  
+new_list = [i[0] for i in sorted_list]  
+
+
+for i in new_list:
+  print i
